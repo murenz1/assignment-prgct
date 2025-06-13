@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            display: none;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Registration Form</h1>
+    
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" value="Test User">
+    </div>
+    
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" value="test@example.com">
+    </div>
+    
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" value="password123">
+    </div>
+    
+    <div class="form-group">
+        <label for="password_confirmation">Confirm Password:</label>
+        <input type="password" id="password_confirmation" value="password123">
+    </div>
+    
+    <div class="form-group">
+        <button onclick="testRegister()">Test Standard Registration</button>
+        <button onclick="testSimpleRegister()">Test Simple Registration</button>
+    </div>
+    
+    <div id="result"></div>
+    
+    <script>
+        function showResult(data, isError = false) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = isError ? 'error' : 'success';
+            resultDiv.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+        }
+        
+        async function testRegister() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const password_confirmation = document.getElementById('password_confirmation').value;
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password,
+                        password_confirmation
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    showResult({
+                        status: 'error',
+                        message: 'Registration failed',
+                        data,
+                        statusCode: response.status
+                    }, true);
+                } else {
+                    showResult({
+                        status: 'success',
+                        message: 'Registration successful',
+                        data
+                    });
+                }
+            } catch (error) {
+                showResult({
+                    status: 'error',
+                    message: 'Request failed',
+                    error: error.message
+                }, true);
+            }
+        }
+        
+        async function testSimpleRegister() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const password_confirmation = document.getElementById('password_confirmation').value;
+            
+            try {
+                const response = await fetch('/api/simple-register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password,
+                        password_confirmation
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    showResult({
+                        status: 'error',
+                        message: 'Simple registration failed',
+                        data,
+                        statusCode: response.status
+                    }, true);
+                } else {
+                    showResult({
+                        status: 'success',
+                        message: 'Simple registration successful',
+                        data
+                    });
+                }
+            } catch (error) {
+                showResult({
+                    status: 'error',
+                    message: 'Request failed',
+                    error: error.message
+                }, true);
+            }
+        }
+    </script>
+</body>
+</html>
